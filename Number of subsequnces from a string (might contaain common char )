@@ -1,0 +1,33 @@
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+
+using namespace std;
+
+int countDistinctSubsequences(string s) {
+    int n = s.size();
+    vector<int> dp(n + 1, 0); // dp[i] will store the number of distinct subsequences using first i characters
+    dp[0] = 1; // Base case: empty subsequence
+
+    unordered_map<char, int> last_occurrence; // To store the last occurrence of each character
+
+    for (int i = 1; i <= n; ++i) {
+        char current_char = s[i - 1];
+        dp[i] = 2 * dp[i - 1]; // Double the subsequences count (including and excluding current character)
+
+        if (last_occurrence.find(current_char) != last_occurrence.end()) {
+            int last_occurrence_index = last_occurrence[current_char];
+            dp[i] -= dp[last_occurrence_index - 1]; // Remove the count of subsequences that have been double-counted
+        }
+
+        last_occurrence[current_char] = i; // Update the last occurrence of the current character
+    }
+
+    return dp[n] - 1; // Subtract 1 to exclude the empty subsequence
+}
+
+int main() {
+    string s = "abc";
+    cout << "The number of distinct subsequences is: " << countDistinctSubsequences(s) << endl;
+    return 0;
+}
